@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biodata</title>
+    <style>
+        body, html {
+            height: 100%;
+            overflow: hidden;
+        }
+        #typewriter, #skills {
+            position: relative;
+            z-index: 1;
+        }
+        #pacman {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            background-color: yellow;
+            border-radius: 50%;
+            clip-path: polygon(100% 0, 75% 50%, 100% 100%, 0 100%, 0 0);
+            z-index: 10000;
+            transition: transform 0.3s ease-out;
+        }
+        #thank-you {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+            opacity: 0;
+            transition: opacity 2s ease-in-out, transform 1s ease-in-out;
+        }
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #typewriter {
+            font-size: 1.2rem;
+            white-space: pre-wrap;
+            border-right: 2px solid white;
+            padding-right: 5px;
+            animation: blink 0.7s step-end infinite;
+        }
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+        .particle {
+            position: absolute;
+            background-color: yellow;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        #skills {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .skill-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #00ff00; /* Neon green color */
+        }
+        .skill {
+            padding: 5px 10px;
+            background-color: rgba(0, 255, 0, 0.2); /* Light green background */
+            border: 1px solid #00ff00; /* Neon green border */
+            border-radius: 15px;
+            font-size: 0.9rem;
+            color: #ffffff; /* White text */
+            display: inline-block;
+            margin: 5px; 
+        }
+    </style>
+</head>
+<body>
+    <div id="typewriter"></div>
+    <div id="skills"></div>
+
+    <script>
+        const text = `Biodata:
+
+Nama saya Mahendra
+Saya berasal dari kelas Bisdig E
+Sekarang saya berumur 20
+Saya mahir dalam development menggunakan Laravel dan PHP
+Website ini saya presentasikan untuk tugas pemrograman website`;
+
+        const typewriter = document.getElementById('typewriter');
+        const skillsContainer = document.getElementById('skills');
+        let index = 0;
+
+        function type() {
+            if (index < text.length) {
+                typewriter.textContent += text.charAt(index);
+                index++;
+                
+                // cek paragraf akhir
+                if (text.charAt(index) === '\n' && text.charAt(index + 1) === '\n') {
+                    setTimeout(type, 1000); 
+                } else if (text.charAt(index) === '\n') {
+                    setTimeout(type, 1000); 
+                } else {
+                    setTimeout(type, 50); 
+                }
+            } else {
+                showSkills();
+            }
+        }
+
+        function showSkills() {
+            const skillTitle = document.createElement('div');
+            skillTitle.className = 'skill-title';
+            skillTitle.textContent = 'Kemampuan Saya:';
+            skillTitle.style.opacity = '0';
+            skillsContainer.appendChild(skillTitle);
+
+            // Fade in judul
+            setTimeout(() => {
+                skillTitle.style.transition = 'opacity 1s ease-in-out';
+                skillTitle.style.opacity = '1';
+            }, 500);
+
+            const skills = ['Tidur', 'Membaca pikiran', 'Googling', 'Menghabiskan uang', 'Bolos Kelas'];
+            skills.forEach((skill, index) => {
+                const skillElement = document.createElement('span');
+                skillElement.className = 'skill';
+                skillElement.textContent = skill;
+                skillElement.style.opacity = '0';
+                skillElement.style.transform = 'translateY(30px) scale(0.8)';
+                skillsContainer.appendChild(skillElement);
+
+                setTimeout(() => {
+                    skillElement.style.transition = 'opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    skillElement.style.opacity = '1';
+                    skillElement.style.transform = 'translateY(0) scale(1)';
+                }, 1000 + index * 400);
+            });
+
+            
+            setTimeout(fadeTextToParticles, 3500); // tunggu 3.5 detik fade in 
+        }
+
+        function fadeTextToParticles() {
+            const elements = document.querySelectorAll('#typewriter, #skills');
+            elements.forEach(el => {
+                const text = el.innerText;
+                el.innerHTML = '';
+                for (let char of text) {
+                    if (char.trim() !== '') {
+                        const span = document.createElement('span');
+                        span.textContent = char;
+                        span.style.display = 'inline-block';
+                        span.style.position = 'relative';
+                        el.appendChild(span);
+                    }
+                }
+            });
+
+            // nunggu animasi typing selesai
+            setTimeout(() => {
+                const chars = document.querySelectorAll('#typewriter span, #skills span');
+                chars.forEach((char) => {
+                    
+                    char.style.position = 'fixed';
+                    char.style.left = `${char.getBoundingClientRect().left}px`;
+                    char.style.top = `${char.getBoundingClientRect().top}px`;
+                });
+
+                
+                elements.forEach(el => el.style.height = '0');
+
+                chars.forEach((char) => {
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+                    const x = Math.random() * viewportWidth - viewportWidth / 2;
+                    const y = Math.random() * viewportHeight - viewportHeight / 2;
+                    const rotate = Math.random() * 720 - 360;
+                    const scale = Math.random() * 1.5 + 0.5;
+                    const hue = Math.random() * 360;
+
+                    char.style.transition = `all 1.5s cubic-bezier(0.25, 0.1, 0.25, 1)`;
+                    char.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg) scale(${scale})`;
+                    char.style.opacity = Math.random() * 0.7 + 0.3;
+                    char.style.color = `hsl(${hue}, 100%, 60%)`;
+                    char.style.textShadow = `0 0 5px hsl(${hue}, 100%, 40%)`;
+                    char.style.zIndex = '9999';
+                });
+
+                // create sama animate pacman
+                const pacman = document.createElement('div');
+                pacman.id = 'pacman';
+                document.body.appendChild(pacman);
+
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+
+                function animatePacman() {
+                    let position = viewportWidth;
+                    let mouthOpen = true;
+                    let eatenChars = 0;
+                    const totalChars = chars.length;
+
+                    const thankYou = document.createElement('div');
+                    thankYou.id = 'thank-you';
+                    thankYou.textContent = 'Terima kasih';
+                    document.body.appendChild(thankYou);
+
+                    function move() {
+                        position -= 3;
+                        const verticalPosition = Math.sin(position * 0.01) * 100 + viewportHeight / 2;
+                        pacman.style.left = `${position}px`;
+                        pacman.style.top = `${verticalPosition}px`;
+
+                        // animasi rotasi sama mulut pacman
+                        const angle = Math.atan2(verticalPosition - pacman.offsetTop, -3) * 180 / Math.PI;
+                        pacman.style.transform = `rotate(${angle}deg)`;
+                        
+                        // Chomping 
+                        const mouthAngle = Math.abs(Math.sin(position * 0.1)) * 40 + 10;
+                        pacman.style.clipPath = `polygon(100% 0, ${100 - mouthAngle}% 50%, 100% 100%, 0 100%, 0 0)`;
+
+                        // cek tabrakan partikel
+                        const pacmanRect = pacman.getBoundingClientRect();
+                        chars.forEach((char) => {
+                            if (char.style.opacity !== '0') {
+                                const charRect = char.getBoundingClientRect();
+                                if (
+                                    charRect.left < pacmanRect.right &&
+                                    charRect.right > pacmanRect.left &&
+                                    charRect.top < pacmanRect.bottom &&
+                                    charRect.bottom > pacmanRect.top
+                                ) {
+                                    char.style.opacity = '0';
+                                    setTimeout(() => char.remove(), 200);
+                                    eatenChars++;
+                                    createEatingEffect(charRect.left, charRect.top);
+                                    
+                                    // animasi makan pacman
+                                    pacman.animate([
+                                        { transform: `rotate(${angle}deg) scale(1)` },
+                                        { transform: `rotate(${angle}deg) scale(1.2)` },
+                                        { transform: `rotate(${angle}deg) scale(1)` }
+                                    ], {
+                                        duration: 150,
+                                        easing: 'ease-in-out'
+                                    });
+                                }
+                            }
+                        });
+
+                        // teks thank you
+                        const progress = eatenChars / totalChars;
+                        thankYou.style.opacity = progress.toString();
+                        thankYou.style.transform = `translate(-50%, -50%) scale(${1 + progress * 0.5})`;
+
+                        if (position > -50) {
+                            requestAnimationFrame(move);
+                        } else {
+                            pacman.remove();
+                            thankYou.style.opacity = '1';
+                            thankYou.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                        }
+                    }
+
+                    move();
+                }
+
+                function createEatingEffect(x, y) {
+                    for (let i = 0; i < 8; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = `${x}px`;
+                        particle.style.top = `${y}px`;
+                        document.body.appendChild(particle);
+
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 80 + 50;
+                        const lifetime = Math.random() * 600 + 400;
+                        const hue = Math.random() * 60 + 30; // kuning ke orange hue
+
+                        particle.animate([
+                            { 
+                                transform: 'translate(0, 0) scale(1)', 
+                                opacity: 1,
+                                backgroundColor: `hsl(${hue}, 100%, 50%)`
+                            },
+                            { 
+                                transform: `translate(${Math.cos(angle) * speed}px, ${Math.sin(angle) * speed}px) scale(0)`, 
+                                opacity: 0,
+                                backgroundColor: `hsl(${hue}, 100%, 70%)`
+                            }
+                        ], {
+                            duration: lifetime,
+                            easing: 'ease-out'
+                        }).onfinish = () => particle.remove();
+                    }
+                }
+
+                setTimeout(animatePacman, 1000);
+            }, 1000); 
+        }
+
+        // floating particle
+        for (let i = 0; i < 50; i++) {
+            createParticle();
+        }
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            document.body.appendChild(particle);
+
+            animateParticle(particle);
+        }
+
+        function animateParticle(particle) {
+            const animation = particle.animate(
+                [
+                    { transform: 'translate(0, 0)' },
+                    { transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)` }
+                ],
+                {
+                    duration: Math.random() * 3000 + 2000,
+                    direction: 'alternate',
+                    iterations: Infinity
+                }
+            );
+        }
+
+        type();
+    </script>
+</body>
+</html>
